@@ -1,0 +1,22 @@
+.home {
+    width: 50%;
+    height: calc(100vh - 300px);
+    min-height: fit-content;
+    text-align: center;
+    padding: 50px;
+     margin-top: 20px;
+     background-color: #608190;
+     border-radius: 10px;
+     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+     h1 {
+        font-size: 2rem;
+        margin: 0 0 30px;
+    }
+
+    p {
+        font-size: 1.2rem;
+        margin: 10px 0;
+    }
+}
+

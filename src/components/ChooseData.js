@@ -1,23 +1,20 @@
 import React, { useState } from "react";
-import "../scss/components/_chooseData.scss"; // 引入 SCSS 樣式
+import "../scss/components/_chooseData.scss";
 
 const ChooseData = ({ patientData, onClose, onSubmit }) => {
     const [selectedAudiogram, setSelectedAudiogram] = useState(null);
     const [selectedImpedance, setSelectedImpedance] = useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 控制下拉選單顯示
 
-    if (!patientData) {
-        return null; // 如果沒有資料，則不顯示彈跳視窗
-    }
+    // 過濾並排序 Audiogram 和 Impedance measurements
+    const filterAndSortActions = (type) => {
+        return (patientData?.["pt:Actions"]?.["pt:Action"] || [])
+            .filter((action) => action["pt:TypeOfData"] === type)
+            .sort((a, b) => new Date(b["pt:ActionDate"]) - new Date(a["pt:ActionDate"]));
+    };
 
-    // 過濾並排序 pt:Actions 陣列中的 Audiogram 和 Impedance measurements
-    const audiogramActions = patientData["pt:Actions"]["pt:Action"]
-        .filter((action) => action["pt:TypeOfData"] === "Audiogram")
-        .sort((a, b) => new Date(b["pt:ActionDate"]) - new Date(a["pt:ActionDate"])); // 日期從近到遠
-
-    const impedanceActions = patientData["pt:Actions"]["pt:Action"]
-        .filter((action) => action["pt:TypeOfData"] === "Impedance measurements")
-        .sort((a, b) => new Date(b["pt:ActionDate"]) - new Date(a["pt:ActionDate"])); // 日期從近到遠
+    const audiogramActions = filterAndSortActions("Audiogram");
+    const impedanceActions = filterAndSortActions("Impedance measurements");
 
     // 處理耳朵標記（假設 Description 中包含耳朵資訊）
     const getEarLabel = (description) => {
@@ -33,10 +30,8 @@ const ChooseData = ({ patientData, onClose, onSubmit }) => {
     const handleImpedanceChange = (action) => {
         setSelectedImpedance((prevSelected) => {
             if (prevSelected.includes(action)) {
-                // 如果已選中，則取消選中
                 return prevSelected.filter((item) => item !== action);
             } else if (prevSelected.length < 2) {
-                // 如果未選中，且選擇數量小於 2，則新增到選中列表
                 return [...prevSelected, action];
             }
             return prevSelected; // 如果已選擇兩個，則不新增
@@ -50,6 +45,10 @@ const ChooseData = ({ patientData, onClose, onSubmit }) => {
                 (action) => action["pt:ActionDate"] === selectedAudiogram
             ),
             impedance: selectedImpedance,
+            testDate:new Date(selectedAudiogram).toLocaleDateString("sv-SE"),
+            patientName: `${patientData?.["pt:LastName"]}${patientData?.["pt:FirstName"]}`,
+            storeName:patientData?.["pt:CreatedBy"],
+            birth:patientData?.["pt:DateofBirth"],
         };
 
         if (onSubmit) {
@@ -62,26 +61,25 @@ const ChooseData = ({ patientData, onClose, onSubmit }) => {
     return (
         <div className="modal-overlay">
             <div className="modal-content">
+            
+                
                 {/* 第一部分：患者基本資料 */}
                 <div className="section">
-                    <h3>患者基本資料</h3>
-                    <p>
-                        姓名：{patientData["pt:LastName"]} {patientData["pt:FirstName"]}
-                    </p>
-                    <p>生日：{patientData["pt:DateofBirth"]}</p>
+                    <h4>患者基本資料</h4>
+                    <p>姓名：{patientData?.["pt:LastName"]}{patientData?.["pt:FirstName"]}</p>
+                    <p>生日：{patientData?.["pt:DateofBirth"]}</p>
                 </div>
 
                 {/* 第二部分：選擇 Audiogram */}
                 <div className="section">
-                    <h3>Audiogram</h3>
+                    <h4>聽力圖</h4>
+                    <p>根據時間選擇</p>
                     <select
                         value={selectedAudiogram || ""}
                         onChange={(e) => setSelectedAudiogram(e.target.value)}
                         className="dropdown"
                     >
-                        <option value="" disabled>
-                            請選擇 Audiogram
-                        </option>
+                        <option value="" disabled>請選擇 Audiogram</option>
                         {audiogramActions.map((action, index) => (
                             <option key={index} value={action["pt:ActionDate"]}>
                                 {action["pt:ActionDate"]}
@@ -92,7 +90,8 @@ const ChooseData = ({ patientData, onClose, onSubmit }) => {
 
                 {/* 第三部分：選擇 Impedance measurements */}
                 <div className="section">
-                    <h3>Impedance measurements</h3>
+                    <h4>鼓室圖</h4>
+                    <p>請選擇最多兩個鼓室圖</p>
                     <div className="custom-dropdown">
                         <button
                             className="dropdown-trigger"
@@ -125,14 +124,12 @@ const ChooseData = ({ patientData, onClose, onSubmit }) => {
                 </div>
 
                 {/* 按鈕區域 */}
-                <div className="section buttons">
-                    <button className="close-button" onClick={onClose}>
-                        關閉
-                    </button>
+                <div className="buttons">
+                    <button className="close-button" onClick={onClose}>關閉</button>
                     <button
                         className="submit-button"
                         onClick={handleSubmit}
-                        disabled={!selectedAudiogram || selectedImpedance.length === 0} // 禁用按鈕，直到選擇完成
+                        disabled={!selectedAudiogram || selectedImpedance.length === 0}
                     >
                         送出
                     </button>

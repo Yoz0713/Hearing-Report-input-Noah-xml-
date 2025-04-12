@@ -1,6 +1,8 @@
-// 匯入頁面樣式
+
 @import "./pages/home";
 @import"./components/chooseData";
+@import"./components/uploadData";
+@import "./components/hearingReport";
 .App {
     text-align: center;
 
@@ -12,32 +14,5 @@
         align-items: center;
         justify-content: center;
         font-size: calc(10px + 2vmin);
-        color: white;
-
-        h1 {
-            font-size: 2.5rem;
-            margin: 0;
-        }
-
-        p {
-            font-size: 1.2rem;
-            margin: 10px 0;
-        }
-
-        .home {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #61dafb;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-
-            h1 {
-                color: #282c34;
-            }
-
-            p {
-                color: #333;
-            }
-        }
     }
 }
