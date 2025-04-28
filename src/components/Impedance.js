@@ -143,7 +143,7 @@ const Impedance = ({ data, ear }) => {
                         <div>
                             <strong>耳道容積 (ml):</strong>
                             <span style={{ color: ear === "right" ? "red" : "#008cd7" }}>
-                                {impedanceData?.CanalVolume?.ComplianceValue?.ArgumentCompliance1}
+                                {impedanceData?.CanalVolume?.ComplianceValue?.ArgumentCompliance1/100}
                             </span>
                         </div>
                         <div>
